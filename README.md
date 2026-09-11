@@ -15,7 +15,7 @@ error handling, multi-tenant story, escalation model, safety, and cuts).
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 python -m playwright install chromium   # downloads a browser binary, needs real internet
-cp .env.example .env                    # then edit .env and add your ANTHROPIC_API_KEY
+echo "ANTHROPIC_API_KEY=your-key-here" > .env   # then edit .env and paste in your real key
 ```
 
 You need your own Anthropic API key (`ANTHROPIC_API_KEY` in `.env`). The

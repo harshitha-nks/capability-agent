@@ -304,17 +304,6 @@
     "url_contains": "https://www.saucedemo.com/checkout-step-two.html",
     "expected_text": null
   },
-  "known_outcomes": [
-    {
-      "name": "invalid_login",
-      "description": "Login was rejected (invalid or locked-out account).",
-      "locator": {
-        "strategy": "data-test",
-        "value": "error",
-        "fallbacks": []
-      },
-      "kind": "business_outcome"
-    }
-  ],
+  "known_outcomes": [],
   "discovery_run_id": "discover_50e34037"
 }

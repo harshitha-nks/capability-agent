@@ -11,14 +11,18 @@ clearly distinguished kinds (see /REPORT.md section 3):
                         detail (step id, what was tried, screenshot) to debug
 """
 import re
+import time
 import uuid
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright, TimeoutError as PWTimeoutError
 
 from .schema import Artifact
 from .browser import resolve_locator
 from .guardrails import Policy, SafetyViolation
 from .logger import RunLogger, redact
 from .escalation import request_human
+
+MAX_STEP_ATTEMPTS = 2      
+RETRY_BACKOFF_SECONDS = 1.5
 
 
 def substitute(value, params: dict):
@@ -50,6 +54,7 @@ def run_replay(artifact_path: str, params: dict, headless: bool = True,
     with sync_playwright() as pw:
         browser = pw.chromium.launch(headless=headless)
         page = browser.new_context().new_page()
+        page.on("dialog", lambda dialog: _handle_dialog(dialog, logger))
         try:
             for step in artifact.steps:
                 _run_step(page, step, params, policy, logger, auto_approve_risky)
@@ -116,11 +121,25 @@ def _run_step(page, step, params, policy, logger, auto_approve_risky):
         request_human(logger, f"Risky step requires approval: {step.description}",
                        {"step": step.id})
 
-    try:
-        loc = resolve_locator(page, step.locator.model_dump())
-    except Exception as e:
-        raise LookupError(f"step {step.id} ({step.action}): {e}")
+    # Transient conditions (a slow load, a momentarily-not-yet-visible element)
+    # get one retry with backoff before we treat this as a hard failure.
+    last_err = None
+    for attempt in range(1, MAX_STEP_ATTEMPTS + 1):
+        try:
+            loc = resolve_locator(page, step.locator.model_dump())
+            _perform_action(loc, step, params)
+            logger.log("step", id=step.id, action=step.action, attempt=attempt)
+            return
+        except (LookupError, PWTimeoutError) as e:
+            last_err = e
+            logger.log("step_retry", id=step.id, attempt=attempt, error=str(e))
+            if attempt < MAX_STEP_ATTEMPTS:
+                time.sleep(RETRY_BACKOFF_SECONDS)
 
+    raise LookupError(f"step {step.id} ({step.action}): {last_err}")
+
+
+def _perform_action(loc, step, params):
     if step.action == "click":
         loc.click()
     elif step.action == "type":
@@ -130,7 +149,13 @@ def _run_step(page, step, params, policy, logger, auto_approve_risky):
     elif step.action == "wait_for":
         loc.wait_for(state="visible")
 
-    logger.log("step", id=step.id, action=step.action)
+
+def _handle_dialog(dialog, logger):
+    """Unexpected browser dialogs (alert/confirm/prompt) are a recoverable
+    condition, not a hard failure: log what appeared and dismiss it so the
+    run can continue rather than hanging forever waiting on a native popup."""
+    logger.log("dialog_auto_dismissed", dialog_type=dialog.type, message=dialog.message)
+    dialog.dismiss()
 
 
 def _match_known_outcome(page, artifact: Artifact, logger):

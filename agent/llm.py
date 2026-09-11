@@ -17,10 +17,12 @@ a numbered list of interactive elements visible on the page, and the history of 
 you've already taken. Choose exactly ONE next action to move closer to the goal.
 
 Respond with ONLY a JSON object, no prose, no markdown fences, matching this shape:
-{"action": "click|type|select|goto|finish|fail",
- "index": <int, required for click/type/select>,
+{"action": "click|type|select|goto|finish|fail|outcome",
+ "index": <int, required for click/type/select/outcome>,
  "text": <string, required for type/select - the value to enter>,
  "url": <string, required for goto>,
+ "outcome_name": <string, required for outcome - short snake_case id, e.g. "invalid_login">,
+ "outcome_description": <string, required for outcome - what this state means>,
  "reasoning": "<one short sentence>",
  "outputs": {"<name>": {"index": <int>, "attribute": "text"}}  // only for finish
 }
@@ -31,6 +33,12 @@ Rules:
   credentials or data.
 - Call "finish" once the goal is verifiably reached; include any requested outputs by
   pointing at the element index that currently displays that value.
+- Call "outcome" when you notice the page has reached a distinct, recognizable state
+  that is clearly NOT the goal but also isn't you being stuck - e.g. a validation error
+  banner, an "invalid credentials" message, a "record not found" result, an "access
+  denied" page. Point "index" at the element that proves this state (e.g. the error
+  banner itself). After you call "outcome" you will be asked again for the next action,
+  so you can then decide to retry, go back, or call "fail".
 - Call "fail" if you are stuck and cannot safely proceed - explain why in reasoning.
 - Never reference an index that is not in the element list.
 """
@@ -45,7 +53,7 @@ def decide(goal: str, params: dict, url: str, elements_desc: str, history: list)
         f"CURRENT URL: {url}\n"
         f"INTERACTIVE ELEMENTS:\n{elements_desc}\n"
         f"ACTIONS TAKEN SO FAR:\n{history_text}\n"
-    )    
+    )
     resp = client.messages.create(
         model=MODEL,
         max_tokens=500,

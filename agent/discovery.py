@@ -2,7 +2,7 @@ import json
 import uuid
 from playwright.sync_api import sync_playwright
 
-from .schema import Artifact, Step, Locator, InputParam, OutputField, Checkpoint
+from .schema import Artifact, Step, Locator, InputParam, OutputField, Checkpoint, KnownOutcome
 from .browser import enumerate_elements, describe_elements, build_locator_spec
 from .llm import decide
 from .guardrails import Policy, SafetyViolation
@@ -24,6 +24,7 @@ def run_discovery(goal: str, start_url: str, params: dict, secret_params: set,
     steps: list[Step] = []
     history: list[str] = []
     outputs: list[OutputField] = []
+    known_outcomes: list[KnownOutcome] = []
     checkpoint = None
 
     with sync_playwright() as pw:
@@ -56,6 +57,18 @@ def run_discovery(goal: str, start_url: str, params: dict, secret_params: set,
                 logger.log("goal_reached", url=page.url)
                 reached_goal = True
                 break
+
+            if action == "outcome":
+                el = elements[decision["index"]]
+                loc_spec = build_locator_spec(el)
+                name = decision.get("outcome_name", f"outcome_{i}")
+                description = decision.get("outcome_description", decision.get("reasoning", ""))
+                known_outcomes.append(KnownOutcome(
+                    name=name, description=description, locator=Locator(**loc_spec),
+                ))
+                logger.log("known_outcome_flagged", name=name, description=description)
+                history.append(f"[outcome flagged] {name}: {description}")
+                continue
 
             if action == "fail":
                 logger.log("agent_stuck", reasoning=decision.get("reasoning"))
@@ -128,6 +141,7 @@ def run_discovery(goal: str, start_url: str, params: dict, secret_params: set,
         steps=steps,
         outputs=outputs,
         checkpoint=checkpoint,
+        known_outcomes=known_outcomes,
         discovery_run_id=run_id,
     )
     with open(out_path, "w") as f:

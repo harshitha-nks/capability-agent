@@ -1,0 +1,241 @@
+{
+  "id": "cap_0dc1d55b",
+  "name": "Attempt to log in with the given username and password. If l",
+  "version": 1,
+  "created_at": "2026-09-11T22:39:00.109341",
+  "goal": "Attempt to log in with the given username and password. If login is rejected with an error message, note that clearly; if login succeeds, that's fine too.",
+  "start_url": "https://www.saucedemo.com",
+  "input_params": [
+    {
+      "name": "username",
+      "type": "string",
+      "required": true,
+      "secret": true,
+      "description": ""
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "required": true,
+      "secret": true,
+      "description": ""
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_7749ab44",
+      "action": "goto",
+      "locator": null,
+      "value": null,
+      "url": "https://www.saucedemo.com",
+      "description": "Open start page",
+      "risky": false
+    },
+    {
+      "id": "step_3af776d5",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "username",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Username",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#user-name",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "{{username}}",
+      "url": null,
+      "description": "Enter username first",
+      "risky": false
+    },
+    {
+      "id": "step_2dba6a0a",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "password",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Password",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#password",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "{{password}}",
+      "url": null,
+      "description": "Enter password before submitting login form.",
+      "risky": false
+    },
+    {
+      "id": "step_8b956bf0",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit the login form with the given credentials.",
+      "risky": false
+    },
+    {
+      "id": "step_d3e21dfc",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit the login form after entering credentials.",
+      "risky": false
+    },
+    {
+      "id": "step_248b1d4c",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit login form with locked_out_user credentials to see the resulting error message.",
+      "risky": false
+    },
+    {
+      "id": "step_f1bed662",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit login form to check for error message with locked out user credentials.",
+      "risky": false
+    },
+    {
+      "id": "step_8ae42c88",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit the login form with locked_out_user credentials to see the error message.",
+      "risky": false
+    },
+    {
+      "id": "step_e0fd3e3c",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit the login form with the locked-out user credentials to see the error message.",
+      "risky": false
+    }
+  ],
+  "outputs": [
+    {
+      "name": "error_message",
+      "type": "string",
+      "description": "",
+      "locator": {
+        "strategy": "data-test",
+        "value": "error-button",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "button|Dismiss error",
+            "fallbacks": []
+          }
+        ]
+      },
+      "attribute": "text"
+    }
+  ],
+  "checkpoint": {
+    "description": "Goal reached",
+    "locator": null,
+    "url_contains": "https://www.saucedemo.com/",
+    "expected_text": null
+  },
+  "known_outcomes": [
+    {
+      "name": "login_rejected",
+      "description": "Login attempt with locked_out_user shows an error banner (with a close/error button), indicating the account is locked out and login was rejected.",
+      "locator": {
+        "strategy": "data-test",
+        "value": "error-button",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "button|Dismiss error",
+            "fallbacks": []
+          }
+        ]
+      },
+      "kind": "business_outcome"
+    }
+  ],
+  "discovery_run_id": "discover_77fc9250"
+}

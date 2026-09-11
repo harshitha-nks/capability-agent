@@ -61,18 +61,24 @@ Every replay ends in one of three clearly labeled outcomes:
   was (locator never appeared, checkpoint didn't match, safety rule
   violated), which step it happened on, and a screenshot.
 
-One real gap I found while testing: `known_outcomes` only gets populated if
-you add it by hand after the fact — the discovery loop doesn't teach itself
-to recognize an error banner automatically. I saw this firsthand: replaying
-with a locked-out test account first came back as a confusing
-"couldn't find the add-to-cart button" failure, two steps after the actual
-problem (a rejected login). Once I manually added the login-error banner as
-a known outcome, replay correctly reported it as a clean `business_outcome`
-instead. Worth fixing properly with more time (see Cuts).
+Two recoverable conditions are handled directly rather than treated as
+crashes: if a step's element doesn't show up right away (a slow load, a
+momentarily-hidden element), replay retries it once with a short pause
+before giving up; and if an unexpected browser popup (an alert/confirm
+dialog) appears, it's automatically logged and dismissed instead of hanging
+the run.
 
-I didn't build retry/backoff for slow-loading pages beyond the locator's own
-short wait, or auto-handling of unexpected popup dialogs — both are small,
-well-understood additions, just not needed to prove out the design here.
+`known_outcomes` also doesn't have to be added by hand anymore. I gave the
+discovery loop a fourth move, alongside click/type/finish: "flag this as a
+known outcome." If Claude notices the page has landed on a distinct
+non-goal state - an error banner, a rejection message - while working
+toward the goal, it names it and describes it, and that gets saved into the
+artifact automatically. I added this after running into the gap myself:
+replaying with a locked-out test account first came back as a confusing
+"couldn't find the add-to-cart button" failure, two steps after the actual
+problem (a rejected login). Once the loop could recognize and record that
+kind of state on its own, replay against the same account came back as a
+clean, correctly labeled result instead of a crash.
 
 ## 4. Heterogeneity & multi-tenant
 
@@ -140,21 +146,28 @@ defense, not a guarantee.
 
 ## 7. What I left out, and why
 
+One optional stretch goal, picked and built:
+
+- **Agent-facing capability catalog.** Every saved artifact can now be
+  listed and called by name with typed arguments — the way an AI agent
+  would use it in production, without needing to know there's a browser
+  underneath. I built a small catalog that turns each artifact's inputs
+  straight into a callable definition Claude (or any tool-using agent) can
+  read, plus a demo where Claude is handed the catalog, picks the right
+  capability on its own, and calls it with the right arguments — end to
+  end, no scripted answer.
+
+The rest, left out:
+
 - **A real operator dashboard** — out of scope per the brief. What I built
   (pause the shared browser window, resume from the terminal) is the
   minimal real version of the same idea.
 - **Multi-tenant overrides** — designed, not built. No second tenant to test
   it against without inventing one.
-- **Retry/backoff for flaky loads, and auto-dismissing popups** — small,
-  well-understood additions I didn't need for this demo.
-- **Auto-discovering "known outcomes" during the agent loop** — right now
-  you have to notice an error state and add it to the artifact by hand
-  afterward, which I actually ran into while testing (see section 3). With
-  more time I'd have the discovery loop flag "this looks like an error
-  state, want to remember it?" on its own.
-- **Confidence scoring / approval gates before unattended replay** — one of
-  the optional extras; skipped so the required core stayed solid instead of
-  spreading effort across an optional feature too.
-- **Exposing artifacts as a callable API for other agents** — `run_replay()`
-  is already a clean function; wrapping it as an endpoint would be a short
-  follow-up, not a rebuild.
+- **A more thorough retry policy** — right now it's one retry with a fixed
+  short pause, and only for elements that fail to show up. A production
+  version would want configurable retry counts and smarter handling of
+  "still loading" versus "genuinely never going to appear."
+- **Confidence scoring / approval gates before unattended replay** — the
+  second optional extra the assignment offers; skipped so I could get the
+  capability catalog fully working instead of doing two things partway.

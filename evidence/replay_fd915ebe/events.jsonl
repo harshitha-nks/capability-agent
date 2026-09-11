@@ -1,0 +1,6 @@
+{"ts": "2026-09-11T22:40:05.241472", "run_id": "replay_fd915ebe", "event": "replay_start", "artifact": "cap_912da466", "params": {"username": "***", "password": "***", "item_name": "Sauce Labs Backpack"}}
+{"ts": "2026-09-11T22:40:06.034765", "run_id": "replay_fd915ebe", "event": "step", "id": "step_e7e7ba71", "action": "goto", "url": "https://www.saucedemo.com"}
+{"ts": "2026-09-11T22:40:10.085407", "run_id": "replay_fd915ebe", "event": "step", "id": "step_755842f3", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:40:14.139410", "run_id": "replay_fd915ebe", "event": "step", "id": "step_9039647c", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:40:18.209295", "run_id": "replay_fd915ebe", "event": "step", "id": "step_e877d389", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:40:18.212478", "run_id": "replay_fd915ebe", "event": "replay_business_outcome", "outcome": "invalid_login"}

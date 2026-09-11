@@ -1,0 +1,14 @@
+{"ts": "2026-09-11T22:37:00.458356", "run_id": "replay_b268d46d", "event": "replay_start", "artifact": "cap_912da466", "params": {"username": "***", "password": "***", "item_name": "Sauce Labs Backpack"}}
+{"ts": "2026-09-11T22:37:01.239369", "run_id": "replay_b268d46d", "event": "step", "id": "step_e7e7ba71", "action": "goto", "url": "https://www.saucedemo.com"}
+{"ts": "2026-09-11T22:37:01.289561", "run_id": "replay_b268d46d", "event": "step", "id": "step_755842f3", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.313401", "run_id": "replay_b268d46d", "event": "step", "id": "step_9039647c", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.356929", "run_id": "replay_b268d46d", "event": "step", "id": "step_e877d389", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.410786", "run_id": "replay_b268d46d", "event": "step", "id": "step_8da97824", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.443835", "run_id": "replay_b268d46d", "event": "step", "id": "step_bfc6603c", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.493063", "run_id": "replay_b268d46d", "event": "step", "id": "step_7b590322", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.519089", "run_id": "replay_b268d46d", "event": "step", "id": "step_600c4ee5", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.522951", "run_id": "replay_b268d46d", "event": "step", "id": "step_f44bda8a", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.527514", "run_id": "replay_b268d46d", "event": "step", "id": "step_13411900", "action": "type", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.560198", "run_id": "replay_b268d46d", "event": "step", "id": "step_bafd8b47", "action": "click", "attempt": 1}
+{"ts": "2026-09-11T22:37:01.560365", "run_id": "replay_b268d46d", "event": "checkpoint_verified"}
+{"ts": "2026-09-11T22:37:01.585046", "run_id": "replay_b268d46d", "event": "replay_success", "outputs": {"item_name": "Sauce Labs Backpack"}}

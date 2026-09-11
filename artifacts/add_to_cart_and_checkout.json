@@ -1,0 +1,292 @@
+{
+  "id": "cap_28b40555",
+  "name": "Log in, add the Sauce Labs Backpack to the cart, and reach t",
+  "version": 1,
+  "created_at": "2026-09-11T21:59:46.248039",
+  "goal": "Log in, add the Sauce Labs Backpack to the cart, and reach the checkout overview page",
+  "start_url": "https://www.saucedemo.com",
+  "input_params": [
+    {
+      "name": "username",
+      "type": "string",
+      "required": true,
+      "secret": true,
+      "description": ""
+    },
+    {
+      "name": "password",
+      "type": "string",
+      "required": true,
+      "secret": true,
+      "description": ""
+    },
+    {
+      "name": "item_name",
+      "type": "string",
+      "required": true,
+      "secret": false,
+      "description": ""
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_5e335254",
+      "action": "goto",
+      "locator": null,
+      "value": null,
+      "url": "https://www.saucedemo.com",
+      "description": "Open start page",
+      "risky": false
+    },
+    {
+      "id": "step_3bd57943",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "username",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Username",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#user-name",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "{{username}}",
+      "url": null,
+      "description": "Enter username first.",
+      "risky": false
+    },
+    {
+      "id": "step_43ada48e",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "password",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Password",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#password",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "{{password}}",
+      "url": null,
+      "description": "Enter password to proceed with login.",
+      "risky": false
+    },
+    {
+      "id": "step_a250e661",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "login-button",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#login-button",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Submit login form after entering credentials.",
+      "risky": false
+    },
+    {
+      "id": "step_e2f0b88f",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "add-to-cart-sauce-labs-backpack",
+        "fallbacks": [
+          {
+            "strategy": "text",
+            "value": "Add to cart",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#add-to-cart-sauce-labs-backpack",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Add Sauce Labs Backpack to the cart.",
+      "risky": false
+    },
+    {
+      "id": "step_a9e0b9f2",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "shopping-cart-link",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "button|Cart, 1 items",
+            "fallbacks": []
+          },
+          {
+            "strategy": "text",
+            "value": "1",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Go to cart to proceed to checkout.",
+      "risky": false
+    },
+    {
+      "id": "step_4134e3a5",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "checkout",
+        "fallbacks": [
+          {
+            "strategy": "text",
+            "value": "Checkout",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#checkout",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Proceed to checkout to continue toward the overview page.",
+      "risky": false
+    },
+    {
+      "id": "step_200dd9da",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "firstName",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|First Name",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#first-name",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "Test",
+      "url": null,
+      "description": "Fill first name to proceed with checkout form.",
+      "risky": false
+    },
+    {
+      "id": "step_460ae3f4",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "lastName",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Last Name",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#last-name",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "User",
+      "url": null,
+      "description": "Fill last name field to proceed with checkout form",
+      "risky": false
+    },
+    {
+      "id": "step_93d58d8d",
+      "action": "type",
+      "locator": {
+        "strategy": "data-test",
+        "value": "postalCode",
+        "fallbacks": [
+          {
+            "strategy": "role",
+            "value": "input|Zip/Postal Code",
+            "fallbacks": []
+          },
+          {
+            "strategy": "css",
+            "value": "#postal-code",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": "12345",
+      "url": null,
+      "description": "Fill postal code before continuing",
+      "risky": false
+    },
+    {
+      "id": "step_ba7406d9",
+      "action": "click",
+      "locator": {
+        "strategy": "data-test",
+        "value": "continue",
+        "fallbacks": [
+          {
+            "strategy": "css",
+            "value": "#continue",
+            "fallbacks": []
+          }
+        ]
+      },
+      "value": null,
+      "url": null,
+      "description": "Continue to checkout overview page after entering info.",
+      "risky": false
+    }
+  ],
+  "outputs": [],
+  "checkpoint": {
+    "description": "Goal reached",
+    "locator": null,
+    "url_contains": "https://www.saucedemo.com/checkout-step-two.html",
+    "expected_text": null
+  },
+  "known_outcomes": [
+    {
+        "name": "invalid_login",
+        "description": "Login was rejected (invalid or locked-out account) - the error banner is shown instead of the inventory page.",
+        "locator": {
+            "strategy": "data-test",
+            "value": "error",
+            "fallbacks": []
+        },
+        "kind": "business_outcome"
+    }
+  ],
+  "discovery_run_id": "discover_ed7578e0"
+}

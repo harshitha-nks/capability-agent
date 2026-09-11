@@ -1,0 +1,115 @@
+# Capability Agent
+
+Discover a UI flow with an LLM, save it as a typed "capability" artifact, and
+replay it deterministically — no model in the loop at replay time. Built
+against [saucedemo.com](https://www.saucedemo.com), a free public demo store
+whose login → cart → checkout flow stands in for a "real" line-of-business
+app's search → detail → action flow.
+
+See `/REPORT.md` for the design write-up (architecture, schema rationale,
+error handling, multi-tenant story, escalation model, safety, and cuts).
+
+## 1. Setup
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+python -m playwright install chromium   # downloads a browser binary, needs real internet
+cp .env.example .env                    # then edit .env and add your ANTHROPIC_API_KEY
+```
+
+You need your own Anthropic API key (`ANTHROPIC_API_KEY` in `.env`). The
+discovery run makes one Claude call per step; a full checkout-overview flow
+is ~6-10 calls.
+
+## 2. Run the browser-free logic tests (no key, no browser needed)
+
+```bash
+python3 -m tests.test_logic
+```
+
+This checks the artifact schema round-trips correctly, the guardrail policy
+enforces domain/action allowlists and risky-action detection, and
+`{{param}}` substitution works. It does **not** exercise the browser or the
+LLM — see step 3 for the real end-to-end run.
+
+## 3. Demo path: discover, then replay
+
+**Discover** (real LLM-driven run against the live site; run headed so you
+can watch, and so you're available if it asks for help):
+
+```bash
+python cli.py discover \
+  --goal "Log in, add the Sauce Labs Backpack to the cart, and reach the checkout overview page" \
+  --start-url "https://www.saucedemo.com" \
+  --params '{"username":"standard_user","password":"secret_sauce","item_name":"Sauce Labs Backpack"}' \
+  --secret-params username,password \
+  --out artifacts/add_to_cart_and_checkout.json \
+  --headed
+```
+
+This writes the artifact to `artifacts/add_to_cart_and_checkout.json` and a
+full structured log + screenshots to `evidence/discover_<id>/`.
+
+**Replay** (deterministic, no LLM, headless by default):
+
+```bash
+python cli.py replay \
+  --artifact artifacts/add_to_cart_and_checkout.json \
+  --params '{"username":"standard_user","password":"secret_sauce","item_name":"Sauce Labs Backpack"}'
+```
+
+Prints a structured JSON result (`success` / `business_outcome` / `failure`)
+and writes logs + screenshots to `evidence/replay_<id>/`.
+
+**Replay with a business outcome instead of a crash** — saucedemo's `locked_out_user`
+is rejected at login with a visible error banner. This should NOT be treated
+as a system crash — it's an expected, informative business outcome the
+artifact was taught to recognize:
+
+```bash
+python cli.py replay \
+  --artifact artifacts/add_to_cart_and_checkout.json \
+  --params '{"username":"locked_out_user","password":"secret_sauce","item_name":"Sauce Labs Backpack"}'
+```
+
+## 4. Human escalation, hands-on
+
+Run discovery or replay with `--headed`. If the agent can't decide what to do
+next, or is about to run a step flagged "risky" by `config/policy.json`
+(e.g. anything matching `finish`, `remove`, `logout`), it will:
+
+1. print the reason and the current context,
+2. leave the **same visible browser window** open and idle,
+3. block on a terminal prompt.
+
+You can click/type directly in that window, then type a short note and press
+Enter to resume, or type `abort` to stop the run cleanly. This is the whole
+handoff mechanism — see `/REPORT.md` section 5 for the design of a fuller
+operator console.
+
+## 5. Running without live services
+
+There's no offline mode for discovery (it needs both the live page and the
+live Claude API by design — that's the point of the assignment). The
+browser-free tests in step 2 are the "no live services" path for verifying
+the artifact schema, guardrails, and substitution logic.
+
+## Project layout
+
+```
+agent/
+  schema.py      typed artifact contract (Locator, Step, Artifact, ...)
+  browser.py     element enumeration + robust locator build/resolve
+  llm.py         Claude call for the "decide" step
+  discovery.py   observe -> decide -> act loop, emits an Artifact
+  replay.py      deterministic replay engine, error taxonomy
+  guardrails.py  domain/action allowlist + risky-action classification
+  logger.py      structured JSONL logs + screenshot evidence
+  escalation.py  human-in-the-loop pause/resume
+cli.py           discover / replay commands
+config/policy.json
+tests/test_logic.py
+evidence/        one folder per run (created at runtime)
+artifacts/       saved capability artifacts
+```
